@@ -1,17 +1,9 @@
 import os
-try:
-    from bs4 import BeautifulSoup
-    import argparse
-    from webbrowser import open_new_tab
-    from requests import get
-    from time import sleep
-    from tqdm import trange
-    import sys
-except ImportError:
-    raise ImportError("Installing all required libraries for you")
-    os.system("pip3 install bs4")
-    os.system("pip3 install requests")
-    os.system("pip3 install tqdm")
+from bs4 import BeautifulSoup
+from requests import get
+from time import sleep
+from tqdm import trange
+import sys
 
 link_list = open("links.txt", "w")
 
@@ -42,21 +34,23 @@ class Update:
     def scarpe_projecteuler_links(self):
         last_page = "https://projecteuler.net/{}".format(BeautifulSoup(get("https://projecteuler.net/archives;page=1").content, "html.parser").find("div", class_="pagination noprint").find_all("a")[-1]["href"])
         total_problems = int(BeautifulSoup(get(last_page).content, "html.parser").find_all("td", class_="id_column")[-1].text)
-        return ["https://projecteuler.net/problem={}".format(snoopdogg) for snoopdogg in range(1, total_problems + 1)]
+        links = []
+        for snoopdogg in trange(1, total_problems + 1, file=sys.stdout, desc='Updating ProjectEuler Links'):
+            links.append("https://projecteuler.net/problem={}".format(snoopdogg))
+        return links
 
     def scrape_codeforces_links(self):
         last_page = int(BeautifulSoup(get("https://codeforces.com/problemset/page/1").content, "html.parser").find_all("span", class_="page-index")[-1].text)
         links = []
         for flomilly in trange(1, last_page + 1, file=sys.stdout, desc='Updating CodeForces Links'):
             links.extend(["https://codeforces.com{}".format(yerrr.find("a")["href"]) for yerrr in BeautifulSoup(get("https://codeforces.com/problemset/page/{}".format(flomilly)).content, "html.parser").find("div", {"style":"background-color: #E1E1E1; padding-bottom: 3px;"}).find("table", class_="problems").find_all("tr")[1::]])
-            sleep(1)
 
         return links
 
     def scrape_dmoj_links(self):
         last_page = int(BeautifulSoup(get("https://dmoj.ca/problems/").content, "html.parser").find("ul", class_="pagination").find_all("a")[-2].text)
         links = []
-        for epsteindidntkillhimself in range(1, last_page + 1):
+        for epsteindidntkillhimself in trange(1, last_page + 1, file=sys.stdout, desc='Updating DMOJ Links'):
             links.extend(["https://dmoj.ca{}".format(rickygervaisdidntkillhimself.find("a")["href"]) for rickygervaisdidntkillhimself in BeautifulSoup(get("https://dmoj.ca/problems/").content, "html.parser").find_all("td", class_="problem")])
 
         return links
@@ -65,11 +59,14 @@ u = Update()
 
 def UpdateLinks():
     global u
-    for a in u.scrape_rc_links(): link_list.write(a + "\n")
-    for a in u.scrape_spoj_links(): link_list.write(a + "\n")
-    for a in u.scarpe_projecteuler_links(): link_list.write(a + "\n")
-    for a in u.scrape_codeforces_links(): link_list.write(a + "\n")
-    for a in u.scrape_dmoj_links(): link_list.write(a + "\n")
+    rc = u.scrape_rc_links()
+    spoj = u.scrape_spoj_links()
+    projecteuler = u.scarpe_projecteuler_links()
+    codeforces = u.scrape_codeforces_links()
+    dmoj = u.scrape_dmoj_links()
+    for a in trange(len(rc), file=sys.stdout, desc="Writing All RosettaCode Links To Text File"): link_list.write(rc[a] + "\n")
+    for a in trange(len(spoj), file=sys.stdout, desc="Writing All SPOJ Links To Text File"): link_list.write(spoj[a] + "\n")
+    for a in trange(len(projecteuler), file=sys.stdout, desc="Writing All ProjectEuler Links To Text File"): link_list.write(projecteuler[a] + "\n")
+    for a in trange(len(codeforces), file=sys.stdout, desc="Writing All CodeForces Links To Text File"): link_list.write(codeforces[a] + "\n")
+    for a in trange(len(dmoj), file=sys.stdout, desc="Writing All DMOJ Links To Text File"): link_list.write(dmoj[a] + "\n")
     link_list.close()
-
-UpdateLinks()
