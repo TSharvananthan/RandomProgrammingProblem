@@ -13,8 +13,6 @@ except ImportError:
     os.system("pip3 install requests")
     os.system("pip3 install tqdm")
 
-link_list = open("links.txt", "w")
-
 class Update:
     def __init__(self):
         self.dmoj = "https://dmoj.ca/problems/?page="
@@ -65,16 +63,11 @@ class Update:
 
 u = Update()
 
-def UpdateLinks():
+def UpdateLinks(link_list):
     global u
-    rc = u.scrape_rc_links()
-    spoj = u.scrape_spoj_links()
-    projecteuler = u.scarpe_projecteuler_links()
-    codeforces = u.scrape_codeforces_links()
-    dmoj = u.scrape_dmoj_links()
-    for a in trange(len(rc), file=sys.stdout, desc="Writing All RosettaCode Links To Text File"): link_list.write(rc[a] + "\n")
-    for a in trange(len(spoj), file=sys.stdout, desc="Writing All SPOJ Links To Text File"): link_list.write(spoj[a] + "\n")
-    for a in trange(len(projecteuler), file=sys.stdout, desc="Writing All ProjectEuler Links To Text File"): link_list.write(projecteuler[a] + "\n")
-    for a in trange(len(codeforces), file=sys.stdout, desc="Writing All CodeForces Links To Text File"): link_list.write(codeforces[a] + "\n")
-    for a in trange(len(dmoj), file=sys.stdout, desc="Writing All DMOJ Links To Text File"): link_list.write(dmoj[a] + "\n")
+    for a in u.scrape_rc_links(): link_list.write(a + "\n")
+    for a in u.scrape_spoj_links(): link_list.write(a + "\n")
+    for a in u.scarpe_projecteuler_links(): link_list.write(a + "\n")
+    for a in u.scrape_codeforces_links(): link_list.write(a + "\n")
+    for a in u.scrape_dmoj_links(): link_list.write(a + "\n")
     link_list.close()
