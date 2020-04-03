@@ -33,7 +33,7 @@ class Update:
     def scrape_spoj_links(self):
         max_pages = int([x.text for x in BeautifulSoup(get("https://www.spoj.com/problems/classical").content, "html.parser").find_all("a", class_="pager_link")][-3])
         links = []
-        for x in range(0, max_pages + 1):
+        for x in trange(0, max_pages + 1, file=sys.stdout, desc='Updating SPOJ Links'):
             links.extend(["https://www.spoj.com{}".format(b.find("td", {"align":"left"}).find("a")["href"]) for b in BeautifulSoup(get("{}{}".format(self.spoj, str(x * 50))).content, "html.parser").find("table", class_="problems table table-condensed table-hover").find("tbody").find_all("tr")])
             sleep(2)
 
