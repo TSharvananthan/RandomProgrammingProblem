@@ -20,6 +20,7 @@ class Update:
         self.spoj = "https://www.spoj.com/problems/classical/sort=0,start="
         self.projecteuler = "https://projecteuler.net/archives;page="
         self.rosettacode = "http://rosettacode.org/wiki/Category:Programming_Tasks"
+        self.codechef = "https://www.codechef.com/problems/"
 
     def scrape_rc_links(self):
         links = []
@@ -61,6 +62,17 @@ class Update:
 
         return links
 
+    def scrape_codechef_links(self):
+        temp = []
+        difficulties = ["school", "easy", "medium", "hard", "challenge", "extcontest"]
+        for o in trange(len(difficulties), file=sys.stdout, desc='Updating CodeChef Links'):
+            temp.extend(BeautifulSoup(get("{}{}".format(self.codechef, difficulties[o])).content, "html.parser").find("table", {"width":"100%"}, class_="dataTable").find("tbody").find_all("div", class_="problemname"))
+        links = []
+        for counter in range(len(temp)):
+            links.append("https://www.codechef.com{}".format(temp[counter].find("a")["href"]))
+
+        return links
+
 u = Update()
 
 def UpdateLinks(link_list):
@@ -70,4 +82,5 @@ def UpdateLinks(link_list):
     for a in u.scarpe_projecteuler_links(): link_list.write(a + "\n")
     for a in u.scrape_codeforces_links(): link_list.write(a + "\n")
     for a in u.scrape_dmoj_links(): link_list.write(a + "\n")
+    for a in u.scrape_codechef_links(): link_list.write(a + "\n")
     link_list.close()
