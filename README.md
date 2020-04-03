@@ -9,8 +9,7 @@ Python 3.6 and the bs4, webbrowser libraries
 cd RandomProgrammingProblem
 python main.py
 ```
-If you would want to update the list of possible problems...
+There are two optional parameters
 ```
-cd RandomProgrammingProblem
-python main.py --update 1
+python main.py --problems [number of problems that you want] --update [set to True to update the list of links you can use]
 ```
