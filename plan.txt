@@ -1,0 +1,9 @@
+get a random programming problem from one of many websites
+
+sites to take from
+  - DMOJ
+  - rosettacode
+  - SPOJ
+  - project euler
+  - codeforces
+  - leetcode
