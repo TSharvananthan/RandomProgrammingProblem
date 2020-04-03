@@ -47,8 +47,9 @@ class Update:
     def scrape_codeforces_links(self):
         last_page = int(BeautifulSoup(get("https://codeforces.com/problemset/page/1").content, "html.parser").find_all("span", class_="page-index")[-1].text)
         links = []
-        for flomilly in range(1, last_page + 1):
+        for flomilly in trange(1, last_page + 1, file=sys.stdout, desc='Updating CodeForces Links'):
             links.extend(["https://codeforces.com{}".format(yerrr.find("a")["href"]) for yerrr in BeautifulSoup(get("https://codeforces.com/problemset/page/{}".format(flomilly)).content, "html.parser").find("div", {"style":"background-color: #E1E1E1; padding-bottom: 3px;"}).find("table", class_="problems").find_all("tr")[1::]])
+            sleep(1)
 
         return links
 
