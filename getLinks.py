@@ -5,10 +5,13 @@ try:
     from webbrowser import open_new_tab
     from requests import get
     from time import sleep
+    from tqdm import trange
+    import sys
 except ImportError:
     raise ImportError("Installing all required libraries for you")
     os.system("pip3 install bs4")
     os.system("pip3 install requests")
+    os.system("pip3 install tqdm")
 
 link_list = open("links.txt", "w")
 
@@ -21,7 +24,11 @@ class Update:
         self.rosettacode = "http://rosettacode.org/wiki/Category:Programming_Tasks"
 
     def scrape_rc_links(self):
-        return ["http://rosettacode.org{}".format(x["href"]) for x in BeautifulSoup(get(self.rosettacode).content, "html.parser").find("div", "mw-category").find_all("a")]
+        links = []
+        object = BeautifulSoup(get(self.rosettacode).content, "html.parser").find("div", "mw-category").find_all("a")
+        for x in trange(len(object), file=sys.stdout, desc='Updating RosettaCode Links'):
+            links.append("http://rosettacode.org{}".format(object[x]["href"]))
+        return links
 
     def scrape_spoj_links(self):
         max_pages = int([x.text for x in BeautifulSoup(get("https://www.spoj.com/problems/classical").content, "html.parser").find_all("a", class_="pager_link")][-3])
@@ -55,8 +62,13 @@ class Update:
 
 u = Update()
 
-for a in u.scrape_rc_links(): link_list.write(a + "\n")
-for a in u.scrape_spoj_links(): link_list.write(a + "\n")
-for a in u.scarpe_projecteuler_links(): link_list.write(a + "\n")
-for a in u.scrape_codeforces_links(): link_list.write(a + "\n")
-for a in u.scrape_dmoj_links(): link_list.write(a + "\n")
+def UpdateLinks():
+    global u
+    for a in u.scrape_rc_links(): link_list.write(a + "\n")
+    for a in u.scrape_spoj_links(): link_list.write(a + "\n")
+    for a in u.scarpe_projecteuler_links(): link_list.write(a + "\n")
+    for a in u.scrape_codeforces_links(): link_list.write(a + "\n")
+    for a in u.scrape_dmoj_links(): link_list.write(a + "\n")
+    link_list.close()
+
+UpdateLinks()
